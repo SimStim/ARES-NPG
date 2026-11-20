@@ -211,6 +211,12 @@ const K_THAI_TOPCHARS = true;
 const K_TCPDF_CALLS_IN_HTML = true;
 
 /**
+ * Methods the new engine may invoke from <tcpdf> tags embedded in HTML.
+ * Required for the QR codes produced by qrLink() in index.php.
+ */
+const K_ALLOWED_TCPDF_TAGS = '|write2DBarcode|';
+
+/**
  * If true and PHP version is greater than 5, then the Error() method throw new exception instead of terminating the execution.
  */
 const K_TCPDF_THROW_EXCEPTION_ERROR = false;
