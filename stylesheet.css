@@ -1,0 +1,32 @@
+body {
+    font: 14pt sans-serif;
+	background-color: lightyellow;
+}
+p {
+	padding: 0.35em 0em;
+	margin: 0em 0em;
+    text-indent: 0.5em;
+	line-height: 1.4em;
+	letter-spacing: 0.05em;
+}
+input {
+    font: bold 14pt sans-serif;
+	background-color: yellow;
+    color: navy;
+	width: 40em;
+	height: 1em;
+    padding: 0.35em 0.35em;
+    border-width: 0px;
+}
+input[type="radio"] {
+    width: 1em;
+    height: 0.65em;
+}
+button {
+    font: bold 14pt serif;
+	background-color: red;
+	color: yellow;
+    width: 30em;  height: 5em;
+    margin: 0em 1.35em;
+    border-width: 0.35em;
+}

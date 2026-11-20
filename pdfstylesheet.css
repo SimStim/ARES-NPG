@@ -1,0 +1,31 @@
+h1 {
+    font-family: helvetica;
+	font-size: 21pt;
+	line-height: 140%;
+	letter-spacing: 1.5px;
+}
+h3 {
+    font-family: helvetica;
+	font-size: 14pt;
+	line-height: 140%;
+	letter-spacing: 1px;
+	color: navy;
+}
+p {
+    font-family: helvetica;
+	font-size: 11pt;
+	line-height: 140%;
+	letter-spacing: 0.5px;
+	text-align: justify;
+    text-indent: 7em;
+}
+ul, li {
+    font-family: helvetica;
+	font-size: 11pt;
+	line-height: 140%;
+	letter-spacing: 0.5px;
+}
+a {
+	color: black;
+	text-decoration: none;
+}
