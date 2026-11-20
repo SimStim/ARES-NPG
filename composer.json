@@ -1,2 +1,17 @@
 {
+    "name": "simstim/ares-npg",
+    "description": "ARES - Automated RESume Generator",
+    "type": "project",
+    "require": {
+        "php": ">=8.2",
+        "tecnickcom/tcpdf": "^7.0"
+    },
+    "scripts": {
+        "tc-lib-pdf-fonts": [
+            "@php vendor/tecnickcom/tc-lib-pdf-font/util/build_fonts.php"
+        ],
+        "post-install-cmd": ["@tc-lib-pdf-fonts"],
+        "post-update-cmd": ["@tc-lib-pdf-fonts"],
+        "post-autoload-dump": ["@tc-lib-pdf-fonts"]
+    }
 }

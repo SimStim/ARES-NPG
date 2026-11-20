@@ -1,4 +1,16 @@
 <?php
+// Collect every missing required extension before deciding whether to continue.
+$requiredExtensions = array('ctype', 'curl', 'filter', 'gd', 'hash', 'json', 'mbstring', 'openssl', 'pcre', 'xml', 'zlib');
+$missingExtensions = array();
+foreach ($requiredExtensions as $extension)
+    if (!extension_loaded($extension))
+        $missingExtensions[] = $extension;
+if (count($missingExtensions) > 0) {
+    echo '<p><strong>ARES cannot start: missing required PHP extensions: '
+       . htmlspecialchars(implode(', ', $missingExtensions)) . '</strong></p>';
+    exit(1);
+}
+
 if (!isset($_POST) || count ($_POST) == 0 || !isset ($_POST["submit"])) {
     $index = file_get_contents('index.html');
 	$form = str_ireplace("::self", $_SERVER['PHP_SELF'], file_get_contents('form.html'));
@@ -18,7 +30,8 @@ if (!isset($_POST) || count ($_POST) == 0 || !isset ($_POST["submit"])) {
 	         str_ireplace("::Title", "ARES - Automatic Resume Generator", str_ireplace("::Body", $form, $index)));
     echo $index;
 } else {
-    require_once ('tcpdf_include.php');
+    require_once ('ares-config.php');
+    require_once ('vendor/autoload.php');
     $GLOBALS["language"] = ($_POST["language"] == "english") ? "english" : "german";
     $GLOBALS["role"] = ($_POST["role"] == "") ? "Dummy" : $_POST["role"];
     $GLOBALS["enter-short"] = ($_POST["enter-short"] == "") ? "Dummy" : $_POST["enter-short"];
@@ -47,7 +60,7 @@ if (!isset($_POST) || count ($_POST) == 0 || !isset ($_POST["submit"])) {
     $qr_tpl = array('', 'QRCODE,H', '', '', '', '', $qr_stl, 'N'); // set qr parameter template array
     function qrLink ($obj, $qrparams, $text, $link) {
         $qrparams[0] = $link;
-		return '<tcpdf method="write2DBarcode" params="' . $obj->serializeTCPDFtagParameters($qrparams) . '" />'
+		return '<tcpdf data="' . $obj->serializeTCPDFtag('write2DBarcode', $qrparams) . '" />'
 		     . '<p><a href="' . $link . '">' . $text . '</a></p>';
     }
 	$pdfcss = "<style>" . file_get_contents("pdfstylesheet.css") . "</style>";
@@ -116,6 +129,6 @@ if (!isset($_POST) || count ($_POST) == 0 || !isset ($_POST["submit"])) {
 	              . qrLink ($pdf, $qr_tpl, str_ireplace("::reference", $GLOBALS["reference"], file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-reference.txt")), $GLOBALS["reference"])
 				  . qrLink ($pdf, $qr_tpl, str_ireplace("::linkself", $linkSelf, file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-linkself.txt")), $linkSelf)
 				  . "<p>ARES version: v" . $GLOBALS["version"] . "</p>", true, false, true, false, "");
-    $pdf->Output("Eduard-Pech-ARES-v" . $GLOBALS["version"] . "-" . $GLOBALS["enter-short"] . "-" . $GLOBALS["language"] . ".pdf", 'I');
+    $pdf->Output("output/Eduard-Pech-ARES-v" . $GLOBALS["version"] . "-" . $GLOBALS["enter-short"] . "-" . $GLOBALS["language"] . ".pdf", 'FI');
 }
 ?>
