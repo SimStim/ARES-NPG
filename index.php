@@ -36,7 +36,7 @@ if (!isset($_POST) || count ($_POST) == 0 || !isset ($_POST["submit"])) {
             $bMargin = $this->getBreakMargin(); // get the current page break margin
             $auto_page_break = $this->AutoPageBreak; // get current auto-page-break mode
             $this->SetAutoPageBreak(false, 0); // disable auto-page-break
-            $bg_img = ($GLOBALS["language"] == "english") ? "flag-uk.jpg" : "flag-de.jpg";
+            $bg_img = ($GLOBALS["language"] == "english") ? "blocks/images/flag-uk.jpg" : "blocks/images/flag-de.jpg";
             $this->Image($bg_img, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
             $this->SetAutoPageBreak($auto_page_break, $bMargin); // restore auto-page-break status
             $this->setPageMark(); // set the starting point for the page content
@@ -71,25 +71,25 @@ if (!isset($_POST) || count ($_POST) == 0 || !isset ($_POST["submit"])) {
     $pdf->setJPEGQuality(75);
     if ($GLOBALS["emphasis"]=="general") {
         $GLOBALS["enter-short"] = ($GLOBALS["language"]=="english") ? "your company" : "Ihrem Unternehmen";
-        $pdf->Image("eduard-general-assistant.jpg", 0, 78.5, 210, 140, "", "https://www.linkedin.com/in/skyabovetheport/", "", true, 150, "TL", false, false, 0, false, false, false);
+        $pdf->Image("blocks/images/eduard-general-assistant.jpg", 0, 78.5, 210, 140, "", "https://www.linkedin.com/in/skyabovetheport/", "", true, 150, "TL", false, false, 0, false, false, false);
         $pdf->SetFont('times', '', 14, '', true);
-        $pdf->writeHTMLCell(0, 0, '', 230, file_get_contents("content-" . $GLOBALS["language"] . "-summary-assistant.html"), 0, 1, 0, true, 'C', true);
-        $pdf->writeHTMLCell(105, 0, '95', '18', file_get_contents("content-" . $GLOBALS["language"] . "-assistant.html"), 0, 1, 0, true, 'L', true);
+        $pdf->writeHTMLCell(0, 0, '', 230, file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-summary-assistant.html"), 0, 1, 0, true, 'C', true);
+        $pdf->writeHTMLCell(105, 0, '95', '18', file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-assistant.html"), 0, 1, 0, true, 'L', true);
         $pdf->AddPage();
-        $pdf->Image("eduard-general-" . $GLOBALS["language"] . ".jpg", 0, 78.5, 210, 140, "", "https://www.linkedin.com/in/skyabovetheport/", "", true, 150, "TL", false, false, 0, false, false, false);
+        $pdf->Image("blocks/images/eduard-general-" . $GLOBALS["language"] . ".jpg", 0, 78.5, 210, 140, "", "https://www.linkedin.com/in/skyabovetheport/", "", true, 150, "TL", false, false, 0, false, false, false);
     }
     else {
-        $pdf->Image("eduard-" . $GLOBALS["emphasis"] . ".jpg", 0, 78.5, 210, 140, "", "https://www.linkedin.com/in/skyabovetheport/", "", true, 150, "TL", false, false, 0, false, false, false);
+        $pdf->Image("blocks/images/eduard-" . $GLOBALS["emphasis"] . ".jpg", 0, 78.5, 210, 140, "", "https://www.linkedin.com/in/skyabovetheport/", "", true, 150, "TL", false, false, 0, false, false, false);
     }
     $pdf->SetFont('helvetica', '', 12, '', true);
-    $pdf->writeHTMLCell(0, 0, '', 230, file_get_contents("content-" . $GLOBALS["language"] . "-summary-" . $GLOBALS["emphasis"] . ".html"), 0, 1, 0, true, 'C', true);
-    $pdf->writeHTMLCell(105, 0, '95', '18', file_get_contents("content-" . $GLOBALS["language"] . "-basicinfo.html"), 0, 1, 0, true, 'L', true);
+    $pdf->writeHTMLCell(0, 0, '', 230, file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-summary-" . $GLOBALS["emphasis"] . ".html"), 0, 1, 0, true, 'C', true);
+    $pdf->writeHTMLCell(105, 0, '95', '18', file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-basicinfo.html"), 0, 1, 0, true, 'L', true);
     $pdf->SetFont('helvetica', '', 11, '', true);
-    $pdf->writeHTMLCell(105, 0, '10', '42', file_get_contents("content-" . $GLOBALS["language"] . "-contact-" . $GLOBALS["emphasis"] . ".html"), 0, 1, 0, true, 'R', true);
+    $pdf->writeHTMLCell(105, 0, '10', '42', file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-contact-" . $GLOBALS["emphasis"] . ".html"), 0, 1, 0, true, 'R', true);
     $pdf->AddPage();
-	$html = $pdfcss . file_get_contents("content-" . $GLOBALS["language"] . "-coverletter.html");
-    $introhtml = ($GLOBALS["emphasis"]=="general") ? $introhtml = "" : file_get_contents("content-" . $GLOBALS["language"] . "-coverletter-intro.html");
-    $rndstuff = explode(PHP_EOL, trim(file_get_contents("content-" . $GLOBALS["language"] . "-items-coverletter.txt"), " \n\r\t\v\0"));
+	$html = $pdfcss . file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-coverletter.html");
+    $introhtml = ($GLOBALS["emphasis"]=="general") ? $introhtml = "" : file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-coverletter-intro.html");
+    $rndstuff = explode(PHP_EOL, trim(file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-items-coverletter.txt"), " \n\r\t\v\0"));
     shuffle ($rndstuff);
     $size = count($rndstuff);
     switch ($GLOBALS["brevity"]) { case "gibson": $num = 1; break;
@@ -102,19 +102,19 @@ if (!isset($_POST) || count ($_POST) == 0 || !isset ($_POST["submit"])) {
             str_ireplace("::reference", $GLOBALS["reference"], str_ireplace("::intro", $introhtml, $html))))));
 	$pdf->WriteHTML($html, true, false, true, false, "");
     $pdf->AddPage();
-	$pdf->WriteHTML($pdfcss . file_get_contents("content-" . $GLOBALS["language"] . "-experience.html"), true, false, true, false, "");
+	$pdf->WriteHTML($pdfcss . file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-experience.html"), true, false, true, false, "");
     $pdf->AddPage();
-	$pdf->WriteHTML($pdfcss . file_get_contents("content-" . $GLOBALS["language"] . "-education.html"), true, false, true, false, "");
+	$pdf->WriteHTML($pdfcss . file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-education.html"), true, false, true, false, "");
     $pdf->AddPage();
-	$html = $pdfcss . file_get_contents("content-" . $GLOBALS["language"] . "-skills.html");
-    $skills = explode(PHP_EOL, trim(file_get_contents("content-" . $GLOBALS["language"] . "-items-skills.txt"), " \n\r\t\v\0"));
+	$html = $pdfcss . file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-skills.html");
+    $skills = explode(PHP_EOL, trim(file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-items-skills.txt"), " \n\r\t\v\0"));
     natcasesort ($skills);
     foreach ($skills as $value) { $skl = explode("::", $value)[0]; $lnk = trim(explode("::", $value)[1], " \n\r\t\v\0"); $html .= qrLink ($pdf, $qr_tpl, $skl . "<br />($lnk)", $lnk); }
 	$pdf->WriteHTML($html, true, false, true, false, "");
     $pdf->AddPage();
-	$pdf->WriteHTML($pdfcss . file_get_contents("content-" . $GLOBALS["language"] . "-notes.html")
-	              . qrLink ($pdf, $qr_tpl, str_ireplace("::reference", $GLOBALS["reference"], file_get_contents("content-" . $GLOBALS["language"] . "-reference.txt")), $GLOBALS["reference"])
-				  . qrLink ($pdf, $qr_tpl, str_ireplace("::linkself", $linkSelf, file_get_contents("content-" . $GLOBALS["language"] . "-linkself.txt")), $linkSelf)
+	$pdf->WriteHTML($pdfcss . file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-notes.html")
+	              . qrLink ($pdf, $qr_tpl, str_ireplace("::reference", $GLOBALS["reference"], file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-reference.txt")), $GLOBALS["reference"])
+				  . qrLink ($pdf, $qr_tpl, str_ireplace("::linkself", $linkSelf, file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-linkself.txt")), $linkSelf)
 				  . "<p>ARES version: v" . $GLOBALS["version"] . "</p>", true, false, true, false, "");
     $pdf->Output("Eduard-Pech-ARES-v" . $GLOBALS["version"] . "-" . $GLOBALS["enter-short"] . "-" . $GLOBALS["language"] . ".pdf", 'I');
 }
