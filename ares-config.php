@@ -40,6 +40,12 @@
 const K_TCPDF_EXTERNAL_CONFIG = true;
 
 /**
+ * Let the new engine's resource sandbox read the app's files even when the
+ * current working directory is different (ROOT is defined in index.php).
+ */
+define('K_ALLOWED_PATHS', array(ROOT));
+
+/**
  * Installation path (/var/www/tcpdf/).
  * By default, it is automatically calculated, but you can also set it as a fixed string to improve performances.
  */
