@@ -1,0 +1,24 @@
+name: Smoke tests
+run-name: Basic compilation tests.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: curl, gd, mbstring, zlib, xml
+          coverage: none
+
+      - name: Install dependencies and generate fonts
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Run smoke tests
+        run: php tests/smoke.php
