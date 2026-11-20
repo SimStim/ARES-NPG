@@ -7,13 +7,12 @@ foreach ($requiredExtensions as $extension)
         $missingExtensions[] = $extension;
 if (count($missingExtensions) > 0) {
     echo '<p><strong>ARES cannot start: missing required PHP extensions: '
-       . htmlspecialchars(implode(', ', $missingExtensions)) . '</strong></p>';
+        . htmlspecialchars(implode(', ', $missingExtensions)) . '</strong></p>';
     exit(1);
 }
-
-if (!isset($_POST) || count ($_POST) == 0 || !isset ($_POST["submit"])) {
+if (!isset($_POST) || count($_POST) == 0 || !isset ($_POST["submit"])) {
     $index = file_get_contents('index.html');
-	$form = str_ireplace("::self", $_SERVER['PHP_SELF'], file_get_contents('form.html'));
+    $form = str_ireplace("::self", $_SERVER['PHP_SELF'], file_get_contents('form.html'));
     if (isset($_GET)) {
         $form = (isset($_GET["language"])) ? str_ireplace("::language-" . $_GET["language"], " CHECKED", $form) : str_ireplace("::language-english", " CHECKED", $form);
         $form = (isset($_GET["brevity"])) ? str_ireplace("::brevity-" . $_GET["brevity"], " CHECKED", $form) : str_ireplace("::brevity-poe", " CHECKED", $form);
@@ -27,11 +26,11 @@ if (!isset($_POST) || count ($_POST) == 0 || !isset ($_POST["submit"])) {
     $form = str_ireplace("::brevity-gibson", "", str_ireplace("::brevity-poe", "", str_ireplace("::brevity-eliade", "", $form)));
     $form = str_ireplace("::em-general", "", str_ireplace("::em-gaming", "", str_ireplace("::em-it", "", str_ireplace("::em-logophilia", "", $form))));
     $index = str_ireplace("::Stylesheet", "<style>" . file_get_contents("stylesheet.css") . "</style>",
-	         str_ireplace("::Title", "ARES - Automatic Resume Generator", str_ireplace("::Body", $form, $index)));
+        str_ireplace("::Title", "ARES - Automatic Resume Generator", str_ireplace("::Body", $form, $index)));
     echo $index;
 } else {
-    require_once ('ares-config.php');
-    require_once ('vendor/autoload.php');
+    require_once('ares-config.php');
+    require_once('vendor/autoload.php');
     $GLOBALS["language"] = ($_POST["language"] == "english") ? "english" : "german";
     $GLOBALS["role"] = ($_POST["role"] == "") ? "Dummy" : $_POST["role"];
     $GLOBALS["enter-short"] = ($_POST["enter-short"] == "") ? "Dummy" : $_POST["enter-short"];
@@ -39,13 +38,16 @@ if (!isset($_POST) || count ($_POST) == 0 || !isset ($_POST["submit"])) {
     $GLOBALS["brevity"] = ($_POST["brevity"] == "") ? "poe" : $_POST["brevity"];
     $GLOBALS["emphasis"] = ($_POST["emphasis"] == "") ? "it" : $_POST["emphasis"];
     $GLOBALS["reference"] = ($_POST["reference"] == "") ? "Dummy" : $_POST["reference"];
-    $GLOBALS["version"] = "1.6c";
+    $GLOBALS["version"] = "1.8";
     $linkSelf = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]?role=" . urlencode($GLOBALS["role"])
-              . "&enter-short=" . urlencode($GLOBALS["enter-short"]) . "&enter-long=" . urlencode($GLOBALS["enter-long"])
-              . "&language=" . urlencode($GLOBALS["language"]) . "&brevity=" . urlencode($GLOBALS["brevity"])
-              . "&emphasis=" . urlencode($GLOBALS["emphasis"]) . "&reference=" . urlencode($GLOBALS["reference"]);
-    class MYPDF extends TCPDF {
-        public function Header() {
+        . "&enter-short=" . urlencode($GLOBALS["enter-short"]) . "&enter-long=" . urlencode($GLOBALS["enter-long"])
+        . "&language=" . urlencode($GLOBALS["language"]) . "&brevity=" . urlencode($GLOBALS["brevity"])
+        . "&emphasis=" . urlencode($GLOBALS["emphasis"]) . "&reference=" . urlencode($GLOBALS["reference"]);
+
+    class MYPDF extends TCPDF
+    {
+        public function Header(): void
+        {
             $bMargin = $this->getBreakMargin(); // get the current page break margin
             $auto_page_break = $this->AutoPageBreak; // get current auto-page-break mode
             $this->SetAutoPageBreak(false, 0); // disable auto-page-break
@@ -55,15 +57,18 @@ if (!isset($_POST) || count ($_POST) == 0 || !isset ($_POST["submit"])) {
             $this->setPageMark(); // set the starting point for the page content
         }
     }
+
     $qr_stl = array('border' => 1, 'vpadding' => 'auto', 'hpadding' => 'auto', 'fgcolor' => array(0, 0, 0),
-                    'bgcolor' => array(255,255,239), 'module_width' => 1.2, 'module_height' => 1.2); // set default style for qr code
+        'bgcolor' => array(255, 255, 239), 'module_width' => 1.2, 'module_height' => 1.2); // set default style for qr code
     $qr_tpl = array('', 'QRCODE,H', '', '', '', '', $qr_stl, 'N'); // set qr parameter template array
-    function qrLink ($obj, $qrparams, $text, $link) {
+    function qrLink($obj, $qrparams, $text, $link): string
+    {
         $qrparams[0] = $link;
-		return '<tcpdf data="' . $obj->serializeTCPDFtag('write2DBarcode', $qrparams) . '" />'
-		     . '<p><a href="' . $link . '">' . $text . '</a></p>';
+        return '<tcpdf data="' . $obj->serializeTCPDFtag('write2DBarcode', $qrparams) . '" />'
+            . '<p><a href="' . $link . '">' . $text . '</a></p>';
     }
-	$pdfcss = "<style>" . file_get_contents("pdfstylesheet.css") . "</style>";
+
+    $pdfcss = "<style>" . file_get_contents("pdfstylesheet.css") . "</style>";
     $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
     $pdf->SetCreator(PDF_CREATOR);
     $pdf->SetAuthor('Ares - Automated RESume Generator');
@@ -71,8 +76,8 @@ if (!isset($_POST) || count ($_POST) == 0 || !isset ($_POST["submit"])) {
     $pdf->SetSubject('Resume for Eduard Pech for the role "' . $GLOBALS["role"] . '" at ' . $GLOBALS["enter-long"]);
     $pdf->SetKeywords('translation, English, German, information technology, IT, Computer Wizard Extraordinaire');
     $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
-    $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-    $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+    $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+    $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
     $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
@@ -82,16 +87,15 @@ if (!isset($_POST) || count ($_POST) == 0 || !isset ($_POST["submit"])) {
     $pdf->setFontSubsetting(true);
     $pdf->AddPage();
     $pdf->setJPEGQuality(75);
-    if ($GLOBALS["emphasis"]=="general") {
-        $GLOBALS["enter-short"] = ($GLOBALS["language"]=="english") ? "your company" : "Ihrem Unternehmen";
+    if ($GLOBALS["emphasis"] == "general") {
+        $GLOBALS["enter-short"] = ($GLOBALS["language"] == "english") ? "your company" : "Ihrem Unternehmen";
         $pdf->Image("blocks/images/eduard-general-assistant.jpg", 0, 78.5, 210, 140, "", "https://www.linkedin.com/in/skyabovetheport/", "", true, 150, "TL", false, false, 0, false, false, false);
         $pdf->SetFont('times', '', 14, '', true);
         $pdf->writeHTMLCell(0, 0, '', 230, file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-summary-assistant.html"), 0, 1, 0, true, 'C', true);
         $pdf->writeHTMLCell(105, 0, '95', '18', file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-assistant.html"), 0, 1, 0, true, 'L', true);
         $pdf->AddPage();
         $pdf->Image("blocks/images/eduard-general-" . $GLOBALS["language"] . ".jpg", 0, 78.5, 210, 140, "", "https://www.linkedin.com/in/skyabovetheport/", "", true, 150, "TL", false, false, 0, false, false, false);
-    }
-    else {
+    } else {
         $pdf->Image("blocks/images/eduard-" . $GLOBALS["emphasis"] . ".jpg", 0, 78.5, 210, 140, "", "https://www.linkedin.com/in/skyabovetheport/", "", true, 150, "TL", false, false, 0, false, false, false);
     }
     $pdf->SetFont('helvetica', '', 12, '', true);
@@ -100,35 +104,42 @@ if (!isset($_POST) || count ($_POST) == 0 || !isset ($_POST["submit"])) {
     $pdf->SetFont('helvetica', '', 11, '', true);
     $pdf->writeHTMLCell(105, 0, '10', '42', file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-contact-" . $GLOBALS["emphasis"] . ".html"), 0, 1, 0, true, 'R', true);
     $pdf->AddPage();
-	$html = $pdfcss . file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-coverletter.html");
-    $introhtml = ($GLOBALS["emphasis"]=="general") ? $introhtml = "" : file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-coverletter-intro.html");
+    $html = $pdfcss . file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-coverletter.html");
+    $introhtml = ($GLOBALS["emphasis"] == "general") ? $introhtml = "" : file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-coverletter-intro.html");
     $rndstuff = explode(PHP_EOL, trim(file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-items-coverletter.txt"), " \n\r\t\v\0"));
-    shuffle ($rndstuff);
+    shuffle($rndstuff);
     $size = count($rndstuff);
-    switch ($GLOBALS["brevity"]) { case "gibson": $num = 1; break;
-                                   case "poe": $num = rand((int) ((int) $size * .25), (int) ((int) $size * .45)); break;
-                                   default: $num = rand((int) ((int) $size * .85), $size); }
+    $num = match ($GLOBALS["brevity"]) {
+        "gibson" => 1,
+        "poe" => rand((int)($size * .25), (int)($size * .45)),
+        default => rand((int)($size * .85), $size),
+    };
     $rndhtml = "";
-    for ($i = 0; $i < $num; $i++) { $rndhtml .= "<p>" . $rndstuff[$i] . "</p>"; }
+    for ($i = 0; $i < $num; $i++) {
+        $rndhtml .= "<p>" . $rndstuff[$i] . "</p>";
+    }
     $html = str_ireplace("::enter-long", $GLOBALS["enter-long"], str_ireplace("::enter-short", $GLOBALS["enter-short"],
-            str_ireplace("::role", $GLOBALS["role"], str_ireplace("::randomstuff", $rndhtml,
+        str_ireplace("::role", $GLOBALS["role"], str_ireplace("::randomstuff", $rndhtml,
             str_ireplace("::reference", $GLOBALS["reference"], str_ireplace("::intro", $introhtml, $html))))));
-	$pdf->WriteHTML($html, true, false, true, false, "");
+    $pdf->WriteHTML($html, true, false, true, false, "");
     $pdf->AddPage();
-	$pdf->WriteHTML($pdfcss . file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-experience.html"), true, false, true, false, "");
+    $pdf->WriteHTML($pdfcss . file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-experience.html"), true, false, true, false, "");
     $pdf->AddPage();
-	$pdf->WriteHTML($pdfcss . file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-education.html"), true, false, true, false, "");
+    $pdf->WriteHTML($pdfcss . file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-education.html"), true, false, true, false, "");
     $pdf->AddPage();
-	$html = $pdfcss . file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-skills.html");
+    $html = $pdfcss . file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-skills.html");
     $skills = explode(PHP_EOL, trim(file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-items-skills.txt"), " \n\r\t\v\0"));
-    natcasesort ($skills);
-    foreach ($skills as $value) { $skl = explode("::", $value)[0]; $lnk = trim(explode("::", $value)[1], " \n\r\t\v\0"); $html .= qrLink ($pdf, $qr_tpl, $skl . "<br />($lnk)", $lnk); }
-	$pdf->WriteHTML($html, true, false, true, false, "");
+    natcasesort($skills);
+    foreach ($skills as $value) {
+        $skl = explode("::", $value)[0];
+        $lnk = trim(explode("::", $value)[1], " \n\r\t\v\0");
+        $html .= qrLink($pdf, $qr_tpl, $skl . "<br />($lnk)", $lnk);
+    }
+    $pdf->WriteHTML($html, true, false, true, false, "");
     $pdf->AddPage();
-	$pdf->WriteHTML($pdfcss . file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-notes.html")
-	              . qrLink ($pdf, $qr_tpl, str_ireplace("::reference", $GLOBALS["reference"], file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-reference.txt")), $GLOBALS["reference"])
-				  . qrLink ($pdf, $qr_tpl, str_ireplace("::linkself", $linkSelf, file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-linkself.txt")), $linkSelf)
-				  . "<p>ARES version: v" . $GLOBALS["version"] . "</p>", true, false, true, false, "");
+    $pdf->WriteHTML($pdfcss . file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-notes.html")
+        . qrLink($pdf, $qr_tpl, str_ireplace("::reference", $GLOBALS["reference"], file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-reference.txt")), $GLOBALS["reference"])
+        . qrLink($pdf, $qr_tpl, str_ireplace("::linkself", $linkSelf, file_get_contents("blocks/text/content-" . $GLOBALS["language"] . "-linkself.txt")), $linkSelf)
+        . "<p>ARES version: v" . $GLOBALS["version"] . "</p>", true, false, true, false, "");
     $pdf->Output("output/Eduard-Pech-ARES-v" . $GLOBALS["version"] . "-" . $GLOBALS["enter-short"] . "-" . $GLOBALS["language"] . ".pdf", 'FI');
 }
-?>
